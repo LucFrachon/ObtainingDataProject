@@ -1,10 +1,10 @@
 library(dplyr); library(data.table)
 
 
-# Flexible function to load various types of files
-loadFile <- function(directory, fileName, class, numRows) {
-      fullPath <- paste(directory, "/", fileName, sep = "")
-      loadFile <- fread(fullPath, colClasses = class, header = FALSE)
+# Function used to load data files without a header, given file name and a subdirectory:
+loadFile <- function(directory, fileName) {
+      fullPath <- paste(directory, fileName, sep = "/")
+      loadFile <- fread(fullPath, header = FALSE)
       loadFile
 }
 
@@ -32,11 +32,11 @@ renameDuplicates <- function(df) {
 dir1 <- "./UCI HAR Dataset/train"
 dir2 <- "./UCI HAR Dataset/test"
 mainDir <- "./UCI HAR Dataset"
-X_complete <- bind_rows(loadFile(dir1, "X_train.txt", "numeric", 7500), 
-                     loadFile(dir2, "X_test.txt", "numeric", 3000))
+X_complete <- bind_rows(loadFile(dir1, "X_train.txt"), 
+                     loadFile(dir2, "X_test.txt"))
 
-# Load features.txt, listing all 561 features, an use it to name the data set columns:
-features <- loadFile(mainDir, "features.txt", "character", 600)
+# Load features.txt, listing all 561 features, and use it to name the data set columns:
+features <- loadFile(mainDir, "features.txt")
 varNames <- unlist(select(features, 2))
 names(X_complete) <- varNames
 
@@ -47,13 +47,14 @@ X_complete <- renameDuplicates(X_complete)
 # Extract only measurements on mean and std deviation for each measurement (Step 2). Note that there
 # are vector angle variables whose names contain the character chain "mean" but are not actually 
 # means. For this reason, we look up "mean()" to return only actual mean values.
-selectSet <- bind_cols(select(X_complete, contains("mean()")), select(X_complete, contains("std()")))
+selectSet <- bind_cols(select(X_complete, contains("mean()")), 
+                       select(X_complete, contains("std()")))
 
 
 # Before moving to step 3, need to load the training and test labels as well as the activity names:
-actNames <- loadFile(mainDir, "activity_labels.txt", c("numeric", "character"), 6)
-y_complete <- bind_rows(loadFile(dir1, "y_train.txt", "numeric", 7500), 
-                         loadFile(dir2, "y_test.txt", "numeric", 3000))
+actNames <- loadFile(mainDir, "activity_labels.txt")
+y_complete <- bind_rows(loadFile(dir1, "y_train.txt"), 
+                         loadFile(dir2, "y_test.txt"))
 y_complete <- inner_join(y_complete, actNames)
 names(y_complete) <- c("activityLabel", "activityName")
 
@@ -63,11 +64,12 @@ selectSet <- bind_cols(y_complete, selectSet)
 
 # Create a new data set with average of each variable, grouped by activity and subject (step 5):
 # First, add the subject information:
-subject <- bind_rows(loadFile(dir1, "subject_train.txt", "numeric", 7500), 
-                         loadFile(dir2, "subject_test.txt", "numeric", 3000))
+subject <- bind_rows(loadFile(dir1, "subject_train.txt"), 
+                         loadFile(dir2, "subject_test.txt"))
 names(subject) <- "subject"
 
-# Then create a copy of selectSet with subject column added to it:
+# Then create a copy of selectSet with subject column added to it, with average by activity and 
+# subject:
 summaryTbl <- bind_cols(subject, selectSet) %>%
       group_by(activityLabel, activityName, subject) %>% 
       summarise_each(funs(mean), -subject, -activityLabel, -activityName)
