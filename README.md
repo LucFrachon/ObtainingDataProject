@@ -7,7 +7,7 @@ This file is the required script for Coursera's Obtaining Data course, which is 
 This code uses the following packages: dplyr, data.table. If you have not installed them, please do so now with install.packages(). They are then loaded automatically by the script.
 
 **Data files:**
-The code assumes that you have retained the folder structure of the downloaded data file, and that all the data is stored in a subdirectory of your working directory. By default, the code is written to use the folllowing structure:
+The code assumes that you have retained the folder structure of the downloaded data file, and that all the data is stored in a subdirectory of your working directory. By default, the code is written to use the folllowing structure (where ~ represents your working directory):
 
     ~/UCI HAR Dataset
     ~/UCI HAR Dataset/train
