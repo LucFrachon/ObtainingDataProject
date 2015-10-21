@@ -1,23 +1,22 @@
-# Human Activity Recognition Using Smartphones Dataset
+#Human Activity Recognition Using Smartphones Dataset
 ###Version 1.0
 
-## Study design
+##Study design
 
-==================================================================
 Jorge L. Reyes-Ortiz, Davide Anguita, Alessandro Ghio, Luca Oneto.
 Smartlab - Non Linear Complex Systems Laboratory
 DITEN - Università degli Studi di Genova.
 Via Opera Pia 11A, I-16145, Genoa, Italy.
 activityrecognition@smartlab.ws
 www.smartlab.ws
-==================================================================
+
 
 The experiments have been carried out with a group of 30 volunteers within an age bracket of 19-48 years. Each person performed six activities (WALKING, WALKING_UPSTAIRS, WALKING_DOWNSTAIRS, SITTING, STANDING, LAYING) wearing a smartphone (Samsung Galaxy S II) on the waist. Using its embedded accelerometer and gyroscope, we captured 3-axial linear acceleration and 3-axial angular velocity at a constant rate of 50Hz. The experiments have been video-recorded to label the data manually. The obtained dataset has been randomly partitioned into two sets, where 70% of the volunteers was selected for generating the training data and 30% the test data. 
 
 The sensor signals (accelerometer and gyroscope) were pre-processed by applying noise filters and then sampled in fixed-width sliding windows of 2.56 sec and 50% overlap (128 readings/window). The sensor acceleration signal, which has gravitational and body motion components, was separated using a Butterworth low-pass filter into body acceleration and gravity. The gravitational force is assumed to have only low frequency components, therefore a filter with 0.3 Hz cutoff frequency was used. From each window, a vector of features was obtained by calculating variables from the time and frequency domain. See 'features_info.txt' for more details. 
 
-For each record it is provided:
-======================================
+###For each record it is provided:
+
 
 - Triaxial acceleration from the accelerometer (total acceleration) and the estimated body acceleration.
 - Triaxial Angular velocity from the gyroscope. 
@@ -25,9 +24,7 @@ For each record it is provided:
 - Its activity label. 
 - An identifier of the subject who carried out the experiment.
 
-The dataset includes the following files:
-=========================================
-
+###The dataset includes the following files:
 - 'README.txt'
 
 - 'features_info.txt': Shows information about the variables used on the feature vector.
@@ -54,15 +51,13 @@ The following files are available for the train and test data. Their description
 
 - 'train/Inertial Signals/body_gyro_x_train.txt': The angular velocity vector measured by the gyroscope for each window sample. The units are radians/second. 
 
-Notes: 
-======
+###Notes: 
 - Features are normalized and bounded within [-1,1].
 - Each feature vector is a row on the text file.
 
 For more information about this dataset contact: activityrecognition@smartlab.ws
 
-License:
-========
+###License:
 Use of this dataset in publications must be acknowledged by referencing the following publication [1] 
 
 [1] Davide Anguita, Alessandro Ghio, Luca Oneto, Xavier Parra and Jorge L. Reyes-Ortiz. Human Activity Recognition on Smartphones using a Multiclass Hardware-Friendly Support Vector Machine. International Workshop of Ambient Assisted Living (IWAAL 2012). Vitoria-Gasteiz, Spain. Dec 2012
@@ -72,8 +67,7 @@ This dataset is distributed AS-IS and no responsibility implied or explicit can 
 Jorge L. Reyes-Ortiz, Alessandro Ghio, Luca Oneto, Davide Anguita. November 2012.
 
 
-Feature Selection 
-=================
+###Feature Selection 
 
 The features selected for this database come from the accelerometer and gyroscope 3-axial raw signals tAcc-XYZ and tGyro-XYZ. These time domain signals (prefix 't' to denote time) were captured at a constant rate of 50 Hz. Then they were filtered using a median filter and a 3rd order low pass Butterworth filter with a corner frequency of 20 Hz to remove noise. Similarly, the acceleration signal was then separated into body and gravity acceleration signals (tBodyAcc-XYZ and tGravityAcc-XYZ) using another low pass Butterworth filter with a corner frequency of 0.3 Hz. 
 
@@ -130,53 +124,83 @@ tBodyAccJerkMean
 tBodyGyroMean
 tBodyGyroJerkMean
 
-## Code Book - run_analysis.R
+##Units
+All measurements and downstream calculated features are normalised within [-1, 1].
 
-### Required packages:
+##Code Book - run_analysis.R
+
+###Required packages:
 - dplyr
 - data.table
 
-### Summary and merging operations executed:
-- We merge the features (X) and classes (y) from the training and test sets
-- We join the classes (y) with the activity labels (activity_labels.txt) using 
-- 
+###Steps and summary operations:
+- Merge the training and test sets for features (X), classes (y) and subjects.
+- Use features.txt to name the feature data set's columns
+- Use a function to rename any duplicate column by adding a numeric suffix ("_1", "_2" etc.) 
+- Select only features that correspond to means and standard deviations of other features (selectSet). Note that the angle() variables are angles between mean vectors, but are not means themselves, therefore I chose not to include them. 
+- Join classes (y) with the activity names (from activity_labels.txt) to get a readable column (activityName) corresponding to the activityLabel 's.
+- Bind classes (and corresponding activityName 's) to the features table
+- Bind the subject column to the selected data set
+- Group the resulting table (summaryTbl) by activity then subject and calculate the mean for each group.
+- Export the table to a summaryTbl.txt
 
-### Variables retained and summarised in the analysis:
+###Variables retained and summarised in the analysis, and exported to summaryTbl.txt:
+| Count | Variables | Variables                  |
+|-------|-----------|----------------------------|
+| [1] |"activityLabel"               |"activityName"               |               
+| [3] |"tBodyAcc-mean()-X"           |"tBodyAcc-mean()-Y"          |
+| [5] |"tBodyAcc-mean()-Z"           |"tGravityAcc-mean()-X"       |
+| [7] |"tGravityAcc-mean()-Y"        |"tGravityAcc-mean()-Z"       |
+| [9] |"tBodyAccJerk-mean()-X"       |"tBodyAccJerk-mean()-Y"      |
+|[11] |"tBodyAccJerk-mean()-Z"       |"tBodyGyro-mean()-X"         |
+|[13] |"tBodyGyro-mean()-Y"          |"tBodyGyro-mean()-Z"         |
+|[15] |"tBodyGyroJerk-mean()-X"      |"tBodyGyroJerk-mean()-Y"     |
+|[17] |"tBodyGyroJerk-mean()-Z"      |"tBodyAccMag-mean()"         |
+|[19] |"tGravityAccMag-mean()"       |"tBodyAccJerkMag-mean()"     |
+|[21] |"tBodyGyroMag-mean()"         |"tBodyGyroJerkMag-mean()"    |
+|[23] |"fBodyAcc-mean()-X"           |"fBodyAcc-mean()-Y"          |
+|[25] |"fBodyAcc-mean()-Z"           |"fBodyAccJerk-mean()-X"      |
+|[27] |"fBodyAccJerk-mean()-Y"       |"fBodyAccJerk-mean()-Z"      |
+|[29] |"fBodyGyro-mean()-X"          |"fBodyGyro-mean()-Y"         |
+|[31] |"fBodyGyro-mean()-Z"          |"fBodyAccMag-mean()"         |
+|[33] |"fBodyBodyAccJerkMag-mean()"  |"fBodyBodyGyroMag-mean()"    |
+|[35] |"fBodyBodyGyroJerkMag-mean()" |"tBodyAcc-std()-X"           |
+|[37] |"tBodyAcc-std()-Y"            |"tBodyAcc-std()-Z"           |
+|[39] |"tGravityAcc-std()-X"         |"tGravityAcc-std()-Y"        |
+|[41] |"tGravityAcc-std()-Z"         |"tBodyAccJerk-std()-X"       |
+|[43] |"tBodyAccJerk-std()-Y"        |"tBodyAccJerk-std()-Z"       |
+|[45] |"tBodyGyro-std()-X"           |"tBodyGyro-std()-Y"          |
+|[47] |"tBodyGyro-std()-Z"           |"tBodyGyroJerk-std()-X"      |
+|[49] |"tBodyGyroJerk-std()-Y"       |"tBodyGyroJerk-std()-Z"      |
+|[51] |"tBodyAccMag-std()"           |"tGravityAccMag-std()"       |
+|[53] |"tBodyAccJerkMag-std()"       |"tBodyGyroMag-std()"         |
+|[55] |"tBodyGyroJerkMag-std()"      |"fBodyAcc-std()-X"           |
+|[57] |"fBodyAcc-std()-Y"            |"fBodyAcc-std()-Z"           |
+|[59] |"fBodyAccJerk-std()-X"        |"fBodyAccJerk-std()-Y"       |
+|[61] |"fBodyAccJerk-std()-Z"        |"fBodyGyro-std()-X"          |
+|[63] |"fBodyGyro-std()-Y"           |"fBodyGyro-std()-Z"          |
+|[65] |"fBodyAccMag-std()"           |"fBodyBodyAccJerkMag-std()"  |
+|[67] |"fBodyBodyGyroMag-std()"      |"fBodyBodyGyroJerkMag-std()" |
 
-````
- [1] "activityID"                  "activityLabel"              
- [3] "subject"                     "tBodyAcc-mean()-X"          
- [5] "tBodyAcc-mean()-Y"           "tBodyAcc-mean()-Z"          
- [7] "tGravityAcc-mean()-X"        "tGravityAcc-mean()-Y"       
- [9] "tGravityAcc-mean()-Z"        "tBodyAccJerk-mean()-X"      
-[11] "tBodyAccJerk-mean()-Y"       "tBodyAccJerk-mean()-Z"      
-[13] "tBodyGyro-mean()-X"          "tBodyGyro-mean()-Y"         
-[15] "tBodyGyro-mean()-Z"          "tBodyGyroJerk-mean()-X"     
-[17] "tBodyGyroJerk-mean()-Y"      "tBodyGyroJerk-mean()-Z"     
-[19] "tBodyAccMag-mean()"          "tGravityAccMag-mean()"      
-[21] "tBodyAccJerkMag-mean()"      "tBodyGyroMag-mean()"        
-[23] "tBodyGyroJerkMag-mean()"     "fBodyAcc-mean()-X"          
-[25] "fBodyAcc-mean()-Y"           "fBodyAcc-mean()-Z"          
-[27] "fBodyAccJerk-mean()-X"       "fBodyAccJerk-mean()-Y"      
-[29] "fBodyAccJerk-mean()-Z"       "fBodyGyro-mean()-X"         
-[31] "fBodyGyro-mean()-Y"          "fBodyGyro-mean()-Z"         
-[33] "fBodyAccMag-mean()"          "fBodyBodyAccJerkMag-mean()" 
-[35] "fBodyBodyGyroMag-mean()"     "fBodyBodyGyroJerkMag-mean()"
-[37] "tBodyAcc-std()-X"            "tBodyAcc-std()-Y"           
-[39] "tBodyAcc-std()-Z"            "tGravityAcc-std()-X"        
-[41] "tGravityAcc-std()-Y"         "tGravityAcc-std()-Z"        
-[43] "tBodyAccJerk-std()-X"        "tBodyAccJerk-std()-Y"       
-[45] "tBodyAccJerk-std()-Z"        "tBodyGyro-std()-X"          
-[47] "tBodyGyro-std()-Y"           "tBodyGyro-std()-Z"          
-[49] "tBodyGyroJerk-std()-X"       "tBodyGyroJerk-std()-Y"      
-[51] "tBodyGyroJerk-std()-Z"       "tBodyAccMag-std()"          
-[53] "tGravityAccMag-std()"        "tBodyAccJerkMag-std()"      
-[55] "tBodyGyroMag-std()"          "tBodyGyroJerkMag-std()"     
-[57] "fBodyAcc-std()-X"            "fBodyAcc-std()-Y"           
-[59] "fBodyAcc-std()-Z"            "fBodyAccJerk-std()-X"       
-[61] "fBodyAccJerk-std()-Y"        "fBodyAccJerk-std()-Z"       
-[63] "fBodyGyro-std()-X"           "fBodyGyro-std()-Y"          
-[65] "fBodyGyro-std()-Z"           "fBodyAccMag-std()"          
-[67] "fBodyBodyAccJerkMag-std()"   "fBodyBodyGyroMag-std()"     
-[69] "fBodyBodyGyroJerkMag-std()" 
-````
+###Ad-hoc functions used in the script:
+####loadFile(directory, fileName, class, numRows):
+- Prepends the directory name to fileName (assumes the data files are in a subdirectory of the current working directory)
+- Uses fread (from the data.table package) to read the data file.
+
+####renameDuplicates(df):
+Appends a numeric suffix ("_1", "_2" etc.) to duplicates column names in the dataframe df.
+- Maps all unique names to a table with matching count (initially 0) (mapNames)
+- Loops through the whole names vector (namesAll) and increments the unique name's count (in mapNames).
+- If the count is greater than 1, appends a suffix to the name in the whole names vector (namesAll). The suffix depends on the count found for this name.
+- Returns df modified with the new names vector.
+
+###Internal variables:
+- dir1, dir2: Character strings. Path names to the subdirectories containing the train and test datasets respectively.
+- mainDir: Character string?. Path name to the subdirectory containing the feature names and activity labels.
+- X_complete: Data frame. Intermediate variable used to collate the train and test datasets.
+- features: Data frame. Used to load the list of features.
+- varNames: Vector. Stores the list of features, to be assigned as X_complete's names vector.
+- actNames: Data frame. Used to load the list of activity labels and their corresponding names.
+- y_complete: Data frame. Intermediate variable used to collate the train and test classes, then joining them to actNames using activityLabel 's. The resulting columns are named activityLabel and activityName.
+- selectSet: Data frame. A subset of X_complete containing only the columns refering to a mean or a standard deviation, and to which y_complete is then column-bound.
+- summaryTbl: Data frame. Summary of selectSet, grouped by activity and subject, with means calculated for each group. This data frame is then exported to summaryTbl.txt.
